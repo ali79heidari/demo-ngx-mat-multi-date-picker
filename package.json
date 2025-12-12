@@ -1,0 +1,66 @@
+{
+  "name": "ngx-multi-date-picker-a-hdr",
+
+  "version": "1.0.0",
+  "description": "A standalone Angular component that provides Gregorian, Jalaali (Persian) and Hijri (Islamic) calendars with built‑in holiday highlighting and custom holiday support.",
+  "keywords": [
+    "angular",
+    "material",
+    "datepicker",
+    "calendar",
+    "holiday",
+    "jalaali",
+    "hijri",
+    "persian",
+    "islamic"
+  ],
+  "author": "Ali Heidari <ali01heidari@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ali-heidari/ngx-multi-date-picker.git"
+  },
+  "main": "dist/ngx-multi-date-picker/bundles/ngx-multi-date-picker.umd.js",
+  "module": "dist/ngx-multi-date-picker/fesm2022/ngx-multi-date-picker.js",
+  "types": "dist/ngx-multi-date-picker/ngx-multi-date-picker.d.ts",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test"
+  },
+  "private": false,
+  "dependencies": {
+    "@angular/animations": "^20.3.15",
+    "@angular/cdk": "^20.2.14",
+    "@angular/common": "^20.0.0",
+    "@angular/compiler": "^20.0.0",
+    "@angular/core": "^20.0.0",
+    "@angular/forms": "^20.0.0",
+    "@angular/material": "^20.2.14",
+    "@angular/platform-browser": "^20.0.0",
+    "@angular/router": "^20.0.0",
+    "moment": "^2.30.1",
+    "moment-hijri": "^3.0.0",
+    "moment-jalaali": "^0.10.4",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.15.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^20.3.13",
+    "@angular/cli": "^20.0.0",
+    "@angular/compiler-cli": "^20.0.0",
+    "@types/jasmine": "~5.1.0",
+    "@types/moment-jalaali": "^0.7.9",
+    "jasmine-core": "~5.7.0",
+    "karma": "~6.4.0",
+    "karma-chrome-launcher": "~3.2.0",
+    "karma-coverage": "~2.2.0",
+    "karma-jasmine": "~5.1.0",
+    "karma-jasmine-html-reporter": "~2.1.0",
+    "ng-packagr": "^20.3.0",
+    "typescript": "~5.8.2"
+  }
+}

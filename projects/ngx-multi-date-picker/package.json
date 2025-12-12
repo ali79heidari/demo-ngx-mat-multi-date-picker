@@ -1,0 +1,17 @@
+{
+  "name": "ngx-multi-date-picker",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/common": "^20.0.0",
+    "@angular/core": "^20.0.0",
+    "@angular/material": "^20.0.0",
+    "@angular/cdk": "^20.0.0",
+    "moment": "^2.0.0",
+    "moment-jalaali": "^0.9.0",
+    "moment-hijri": "^2.1.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "sideEffects": false
+}
