@@ -21,7 +21,7 @@ A **stand‑alone Angular component** that wraps the Angular Material `MatDatepi
 ## 📦 Installation
 
 ```bash
-npm install @your‑scope/ngx-multi-date-picker   # replace with the actual published name
+npm install ngx-mat-multi-date-picker
 ```
 
 > **Peer dependencies** (Angular 20+, Angular Material 20+, Moment 2.30+). Make sure they are installed in your project.
