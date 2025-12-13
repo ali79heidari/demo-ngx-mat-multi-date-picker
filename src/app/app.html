@@ -2,7 +2,7 @@
   <mat-card class="demo-card">
     <mat-card-header>
       <mat-card-title>Angular Multi-Calendar Picker</mat-card-title>
-      <mat-card-subtitle>Switch between Jalaali, Gregorian, and Hijri</mat-card-subtitle>
+      <mat-card-subtitle>Switch between Jalali, Gregorian, and Hijri</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
 
@@ -49,7 +49,7 @@
         <section class="holiday-toggles">
           <h4>Highlight Official Holidays:</h4>
           <p><mat-checkbox [(ngModel)]="showGregorianHolidays">Gregorian</mat-checkbox></p>
-          <p><mat-checkbox [(ngModel)]="showJalaaliHolidays">Jalaali (Solar)</mat-checkbox></p>
+          <p><mat-checkbox [(ngModel)]="showJalaliHolidays">Jalali (Solar)</mat-checkbox></p>
           <p><mat-checkbox [(ngModel)]="showHijriHolidays">Hijri (Lunar)</mat-checkbox></p>
         </section>
       </div>
@@ -63,7 +63,7 @@
           [weekendDays]="weekendDays"
           [customGregorianHolidays]="parsedCustomHolidays"
           [showGregorianHolidays]="showGregorianHolidays"
-          [showJalaliHolidays]="showJalaaliHolidays"
+          [showJalaliHolidays]="showJalaliHolidays"
           [showHijriHolidays]="showHijriHolidays">
         </ngx-multi-datepicker>
       </div>
@@ -72,7 +72,7 @@
         <div class="result-display">
           <h3>Selected Date Formats:</h3>
           <p><strong>Gregorian:</strong> {{ gregorianDate }}</p>
-          <p><strong>Jalaali:</strong> {{ jalaaliDate }}</p>
+          <p><strong>Jalali:</strong> {{ jalaliDate }}</p>
           <p><strong>Hijri:</strong> {{ hijriDate }}</p>
           <p><strong>ISO:</strong> {{ dateValue.toISOString() }}</p>
         </div>

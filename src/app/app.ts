@@ -34,17 +34,17 @@ export class App {
   startDay: StartDayOfWeek = 'saturday';
 
   showGregorianHolidays = false;
-  showJalaaliHolidays = false;
+  showJalaliHolidays = false;
   showHijriHolidays = false;
 
   types: {value: CalendarType, label: string}[] = [
-    { value: 'jalali', label: 'Jalaali (Persian)' },
+    { value: 'jalali', label: 'Jalali (Persian)' },
     { value: 'gregorian', label: 'Gregorian' },
     { value: 'hijri', label: 'Hijri (Lunar)' }
   ];
 
   startDays: {value: StartDayOfWeek, label: string}[] = [
-    { value: 'saturday', label: 'Saturday (Jalaali Default)' },
+    { value: 'saturday', label: 'Saturday (Jalali Default)' },
     { value: 'sunday', label: 'Sunday (Gregorian Default)' },
     { value: 'monday', label: 'Monday (ISO Default)' }
   ];
@@ -99,7 +99,7 @@ export class App {
     return d.format('YYYY/MM/DD');
   }
 
-  get jalaaliDate(): string {
+  get jalaliDate(): string {
     if (!this.dateValue) return '';
     // Ensure we are working with a standard Gregorian Dayjs object for conversion source
     const d = dayjs(this.dateValue.valueOf());
