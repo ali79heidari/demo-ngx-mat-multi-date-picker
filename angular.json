@@ -3,59 +3,29 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "ngx-multi-date-picker": {
-      "projectType": "library",
-      "root": "projects/ngx-multi-date-picker",
-      "sourceRoot": "projects/ngx-multi-date-picker/src",
-      "prefix": "lib",
-      "architect": {
-        "build": {
-          "builder": "@angular/build:ng-packagr",
-          "configurations": {
-            "production": {
-              "tsConfig": "projects/ngx-multi-date-picker/tsconfig.lib.prod.json"
-            },
-            "development": {
-              "tsConfig": "projects/ngx-multi-date-picker/tsconfig.lib.json"
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "test": {
-          "builder": "@angular/build:karma",
-          "options": {
-            "tsConfig": "projects/ngx-multi-date-picker/tsconfig.spec.json",
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ]
-          }
-        }
-      }
-    },
     "demo-app": {
       "projectType": "application",
       "schematics": {},
-      "root": "projects/demo-app",
-      "sourceRoot": "projects/demo-app/src",
+      "root": ".",
+      "sourceRoot": "src",
       "prefix": "app",
       "architect": {
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "browser": "projects/demo-app/src/main.ts",
+            "browser": "src/main.ts",
             "polyfills": [
               "zone.js"
             ],
-            "tsConfig": "projects/demo-app/tsconfig.app.json",
+            "tsConfig": "tsconfig.app.json",
             "assets": [
               {
                 "glob": "**/*",
-                "input": "projects/demo-app/public"
+                "input": "public"
               }
             ],
             "styles": [
-              "projects/demo-app/src/styles.css"
+              "src/styles.css"
             ],
             "allowedCommonJsDependencies": [
               "moment",
@@ -109,15 +79,15 @@
               "zone.js",
               "zone.js/testing"
             ],
-            "tsConfig": "projects/demo-app/tsconfig.spec.json",
+            "tsConfig": "tsconfig.spec.json",
             "assets": [
               {
                 "glob": "**/*",
-                "input": "projects/demo-app/public"
+                "input": "public"
               }
             ],
             "styles": [
-              "projects/demo-app/src/styles.css"
+              "src/styles.css"
             ]
           }
         }

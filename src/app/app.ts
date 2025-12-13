@@ -6,12 +6,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatInputModule } from '@angular/material/input';
-import { MultiDatepickerComponent, CalendarType, StartDayOfWeek, CustomHolidayRule } from 'ngx-multi-date-picker';
 import dayjs, { Dayjs } from 'dayjs';
 import * as jalaali from 'jalaali-js';
 import 'dayjs/locale/fa';
 import 'dayjs/locale/ar';
-
+import {CalendarType, CustomHolidayRule, MultiDatepickerComponent, StartDayOfWeek} from 'ngx-mat-multi-date-picker';
 
 @Component({
   selector: 'app-root',
@@ -30,7 +29,7 @@ import 'dayjs/locale/ar';
   styleUrl: './app.css'
 })
 export class App {
-  calendarType: CalendarType = 'jalaali';
+  calendarType: CalendarType = 'jalali';
   dateValue: Dayjs | null = dayjs();
   startDay: StartDayOfWeek = 'saturday';
 
@@ -39,7 +38,7 @@ export class App {
   showHijriHolidays = false;
 
   types: {value: CalendarType, label: string}[] = [
-    { value: 'jalaali', label: 'Jalaali (Persian)' },
+    { value: 'jalali', label: 'Jalaali (Persian)' },
     { value: 'gregorian', label: 'Gregorian' },
     { value: 'hijri', label: 'Hijri (Lunar)' }
   ];
