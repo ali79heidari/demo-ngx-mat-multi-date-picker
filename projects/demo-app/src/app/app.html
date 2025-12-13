@@ -5,32 +5,38 @@
       <mat-card-subtitle>Switch between Jalaali, Gregorian, and Hijri</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
-      
+
       <div class="controls">
         <mat-form-field appearance="outline">
           <mat-label>Select Calendar System</mat-label>
           <mat-select [(ngModel)]="calendarType" name="calendarType">
-            <mat-option *ngFor="let t of types" [value]="t.value">
-              {{t.label}}
-            </mat-option>
+            @for (t of types; track t) {
+              <mat-option [value]="t.value">
+                {{ t.label }}
+              </mat-option>
+            }
           </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Start Day of Week</mat-label>
           <mat-select [(ngModel)]="startDay" name="startDay">
-            <mat-option *ngFor="let d of startDays" [value]="d.value">
-              {{d.label}}
-            </mat-option>
+            @for (d of startDays; track d) {
+              <mat-option [value]="d.value">
+                {{ d.label }}
+              </mat-option>
+            }
           </mat-select>
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>Weekend Holidays</mat-label>
           <mat-select [(ngModel)]="weekendDays" name="weekendDays" multiple>
-            <mat-option *ngFor="let d of daysOfWeek" [value]="d.value">
-              {{d.label}}
-            </mat-option>
+            @for (d of daysOfWeek; track d) {
+              <mat-option [value]="d.value">
+                {{ d.label }}
+              </mat-option>
+            }
           </mat-select>
         </mat-form-field>
 
@@ -46,12 +52,12 @@
           <p><mat-checkbox [(ngModel)]="showJalaaliHolidays">Jalaali (Solar)</mat-checkbox></p>
           <p><mat-checkbox [(ngModel)]="showHijriHolidays">Hijri (Lunar)</mat-checkbox></p>
         </section>
-      </div>
+      </div>  
 
       <div class="picker-container">
-        <ngx-multi-datepicker 
+        <ngx-multi-datepicker
           [label]="'Select Date (' + calendarType + ')'"
-          [calendarType]="calendarType" 
+          [calendarType]="calendarType"
           [(value)]="dateValue"
           [startDay]="startDay"
           [weekendDays]="weekendDays"
@@ -62,13 +68,15 @@
         </ngx-multi-datepicker>
       </div>
 
-      <div class="result-display" *ngIf="dateValue">
-        <h3>Selected Date Formats:</h3>
-        <p><strong>Gregorian:</strong> {{ gregorianDate }}</p>
-        <p><strong>Jalaali:</strong> {{ jalaaliDate }}</p>
-        <p><strong>Hijri:</strong> {{ hijriDate }}</p>
-        <p><strong>ISO:</strong> {{ dateValue.toISOString() }}</p>
-      </div>
+      @if (dateValue) {
+        <div class="result-display">
+          <h3>Selected Date Formats:</h3>
+          <p><strong>Gregorian:</strong> {{ gregorianDate }}</p>
+          <p><strong>Jalaali:</strong> {{ jalaaliDate }}</p>
+          <p><strong>Hijri:</strong> {{ hijriDate }}</p>
+          <p><strong>ISO:</strong> {{ dateValue.toISOString() }}</p>
+        </div>
+      }
 
     </mat-card-content>
   </mat-card>
