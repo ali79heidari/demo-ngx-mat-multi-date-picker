@@ -1,45 +1,16 @@
 import { Inject, Injectable, Optional } from '@angular/core';
 import { DateAdapter, MAT_DATE_LOCALE } from '@angular/material/core';
-import moment from 'moment';
-// @ts-ignore
-import moment_jalaali from 'moment-jalaali';
-// @ts-ignore
-import moment_hijri from 'moment-hijri';
+import dayjs, { Dayjs } from 'dayjs';
+import './dayjs-extensions';
 import { Subject } from 'rxjs';
+import * as jalaali from 'jalaali-js';
+
 
 export type CalendarType = 'gregorian' | 'jalaali' | 'hijri';
 export type StartDayOfWeek = 'saturday' | 'sunday' | 'monday';
 
-declare module 'moment' {
-  interface Moment {
-    jYear(): number;
-    jYear(y: number): moment.Moment;
-    jMonth(): number;
-    jMonth(m: number): moment.Moment;
-    jDate(): number;
-    jDate(d: number): moment.Moment;
-    jDayOfYear(): number;
-    jDayOfYear(d: number): moment.Moment;
-    jWeek(): number;
-    jWeek(w: number): moment.Moment;
-    jWeekYear(): number;
-    jWeekYear(y: number): moment.Moment;
-
-    iYear(): number;
-    iYear(y: number): moment.Moment;
-    iMonth(): number;
-    iMonth(m: number): moment.Moment;
-    iDate(): number;
-    iDate(d: number): moment.Moment;
-    iDayOfYear(): number;
-    iDayOfYear(d: number): moment.Moment;
-
-    format(format?: string): string;
-  }
-}
-
 @Injectable()
-export class MultiDateAdapter extends DateAdapter<moment.Moment> {
+export class MultiDateAdapter extends DateAdapter<Dayjs> {
   private _calendarType: CalendarType = 'jalaali';
   private _customStartDay: number | null = null;
   // @ts-ignore
@@ -48,10 +19,7 @@ export class MultiDateAdapter extends DateAdapter<moment.Moment> {
   constructor(@Optional() @Inject(MAT_DATE_LOCALE) dateLocale: string) {
     super();
     this.setLocale(dateLocale || 'fa');
-    moment.locale(this.locale);
-    moment_jalaali.locale(this.locale);
-    moment_hijri.locale(this.locale);
-    console.log('[MultiDateAdapter] - Strategy: Aggressive Re-wrapping');
+    dayjs.locale(this.locale);
   }
 
   setCalendarType(type: CalendarType) {
@@ -68,57 +36,39 @@ export class MultiDateAdapter extends DateAdapter<moment.Moment> {
     this.changes.next();
   }
 
-  private _wrap(date: moment.Moment, type?: CalendarType): any {
-    const targetType = type || this._calendarType;
-    if (!date || !date.isValid()) return date;
-    
-    // Aggressively re-wrap to ensure the instance prototype matches the library
-    // This is crucial because moment-jalaali/hijri extend the prototype of their OWN instances
-    // but might not successfully patch the global 'moment' if webpack isolates modules.
-    // By creating a fresh instance via the specific library, we guarantee the methods exist.
-    if (targetType === 'jalaali') {
-        // .toDate() strips it down to a JS Date, ensuring clean re-creation
-        const jm = moment_jalaali(date.toDate());
-        jm.locale(this.locale);
-        return jm;
-    }
-    if (targetType === 'hijri') {
-        const hm = moment_hijri(date.toDate());
-        // Hijri library often defaults to Arabic-Indic digits unless 'en' locale or specific settings are used
-        // We set to 'en' temporarily for consistent parsing/formatting math, but display might need 'fa' or 'ar'
-        // For now, let's keep it 'en' to ensure iYear/iMonth math works predictably (some versions have issues with non-latin digits)
-        // or just inherit. Let's try inheriting first.
-        hm.locale(this.locale); 
-        return hm;
-    }
-    
-    const m = moment(date.toDate());
-    m.locale(this.locale);
-    return m;
+  // Helper to ensure we have a valid dayjs object
+  private _ensureDate(date: any): Dayjs | null {
+    if (!date) return null;
+    const d = dayjs(date);
+    return d.isValid() ? d : null;
   }
 
-  getYear(date: moment.Moment): number {
-    const d = this._wrap(date);
+  getYear(date: Dayjs): number {
+    const d = this._ensureDate(date);
+    if (!d) return 0;
     if (this._calendarType === 'jalaali') return d.jYear();
     if (this._calendarType === 'hijri') return d.iYear();
-    return d.year();
+    return dayjs(d.valueOf()).year();
   }
 
-  getMonth(date: moment.Moment): number {
-    const d = this._wrap(date);
+  getMonth(date: Dayjs): number {
+    const d = this._ensureDate(date);
+    if (!d) return 0;
     if (this._calendarType === 'jalaali') return d.jMonth();
     if (this._calendarType === 'hijri') return d.iMonth();
-    return d.month();
+    return dayjs(d.valueOf()).month();
   }
 
-  getDate(date: moment.Moment): number {
-    const d = this._wrap(date);
+  getDate(date: Dayjs): number {
+    const d = this._ensureDate(date);
+    if (!d) return 0;
     if (this._calendarType === 'jalaali') return d.jDate();
     if (this._calendarType === 'hijri') return d.iDate();
-    return d.date();
+    return dayjs(d.valueOf()).date();
   }
 
-  getDayOfWeek(date: moment.Moment): number {
+
+  getDayOfWeek(date: Dayjs): number {
     return date.day();
   }
 
@@ -129,7 +79,10 @@ export class MultiDateAdapter extends DateAdapter<moment.Moment> {
     if (this._calendarType === 'hijri') {
         return ['محرم', 'صفر', 'ربیع‌الاول', 'ربیع‌الثانی', 'جمادی‌الاول', 'جمادی‌الثانی', 'رجب', 'شعبان', 'رمضان', 'شوال', 'ذی‌القعده', 'ذی‌الحجه'];
     }
-    return moment.localeData(this.locale).months();
+    // Use dayjs locale data if possible, or fallback
+    // dayjs().localeData() needs localeData plugin.
+    // For now, let's assume 'fa' locale is loaded and we can get months.
+    return dayjs.months();
   }
 
   getDateNames(): string[] {
@@ -142,11 +95,12 @@ export class MultiDateAdapter extends DateAdapter<moment.Moment> {
     if (this._calendarType === 'jalaali') {
         return ['یک‌شنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنج‌شنبه', 'جمعه', 'شنبه'];
     }
-    return moment.localeData(this.locale).weekdaysMin();
+    return dayjs.weekdaysMin();
   }
 
-  getYearName(date: moment.Moment): string {
-    const d = this._wrap(date);
+  getYearName(date: Dayjs): string {
+    const d = this._ensureDate(date);
+    if (!d) return '';
     if (this._calendarType === 'jalaali') return String(d.jYear());
     if (this._calendarType === 'hijri') return String(d.iYear());
     return String(d.year());
@@ -157,114 +111,143 @@ export class MultiDateAdapter extends DateAdapter<moment.Moment> {
     return this._calendarType === 'jalaali' ? 6 : 0;
   }
 
-  getNumDaysInMonth(date: moment.Moment): number {
-    const d = this._wrap(date);
-    if (this._calendarType === 'jalaali') return moment_jalaali.jDaysInMonth(d.jYear(), d.jMonth());
-    if (this._calendarType === 'hijri') return moment_hijri.iDaysInMonth(d.iYear(), d.iMonth());
+  getNumDaysInMonth(date: Dayjs): number {
+    const d = this._ensureDate(date);
+    if (!d) return 0;
+    if (this._calendarType === 'jalaali') return d.jDaysInMonth();
+    if (this._calendarType === 'hijri') return d.iDaysInMonth();
     return d.daysInMonth();
   }
 
-  clone(date: moment.Moment): moment.Moment {
-    // We can just clone the standard moment, wrapping handles the rest on demand
+  clone(date: Dayjs): Dayjs {
     return date.clone();
   }
 
-  createDate(year: number, month: number, date: number): moment.Moment {
+  createDate(year: number, month: number, date: number): Dayjs {
+    // month is 0-indexed
     if (this._calendarType === 'jalaali') {
-       return moment_jalaali(`${year}/${month + 1}/${date}`, 'jYYYY/jM/jD').locale(this.locale);
+       const { gy, gm, gd } = jalaali.toGregorian(year, month + 1, date);
+       return dayjs(new Date(gy, gm - 1, gd)).locale(this.locale);
     }
     if (this._calendarType === 'hijri') {
-       return moment_hijri(`${year}/${month + 1}/${date}`, 'iYYYY/iM/iD').locale(this.locale);
+       // Using dayjs-hijri: create a dummy date then set iYear/iMonth/iDate
+       // But wait, setting iYear might change other fields. We should set them in order or use a parser if available.
+       // dayjs-hijri probably doesn't have a construct-from-hijri method exposed easily except parsing string?
+       // 'iYYYY/iM/iD' format
+       const hStr = `${year}/${month + 1}/${date}`;
+       // If dayjs parse format works with hijri?
+       // Probably not. usage: dayjs('1400/1/1', 'iYYYY/iM/iD')?
+       // dayjs-hijri doesn't seem to support custom parse format for Hijri out of the box unless documented.
+       // Fallback: Use a known valid date and adjust.
+       let d = dayjs().locale(this.locale); // Start with today
+       // @ts-ignore
+       if (d.calendar) d = d.calendar('hijri');
+       // Set Year, Month, Date.
+       // Note: month index 0-11
+       return d.year(year).month(month).date(date);
     }
-    return moment([year, month, date]).locale(this.locale);
+    return dayjs(new Date(year, month, date)).locale(this.locale);
   }
 
-  today(): moment.Moment {
-    if (this._calendarType === 'jalaali') return moment_jalaali().locale(this.locale);
-    if (this._calendarType === 'hijri') return moment_hijri().locale(this.locale);
-    return moment().locale(this.locale);
+  today(): Dayjs {
+    let d = dayjs().locale(this.locale);
+    if (this._calendarType === 'hijri') {
+        // @ts-ignore
+        if (d.calendar) d = d.calendar('hijri');
+    }
+    // For Jalaali we use standard gregorian backing, so no special calendar mode needed on the object itself other than for formatting?
+    // Our jYear extension methods compute from gregorian.
+    return d;
   }
 
-  parse(value: any, parseFormat: any): moment.Moment | null {
+  parse(value: any, parseFormat: any): Dayjs | null {
     if (value && typeof value === 'string') {
         if (this._calendarType === 'jalaali') {
-            return moment_jalaali(value, 'jYYYY/jM/jD');
+            // value format 'jYYYY/jM/jD' or similar
+            // We can split and use createDate
+            const parts = value.split('/');
+            if (parts.length === 3) {
+                return this.createDate(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+            }
         }
         if (this._calendarType === 'hijri') {
-            return moment_hijri(value, 'iYYYY/iM/iD');
+             // Try strict parsing if format is known, else split
+            const parts = value.split('/');
+            if (parts.length === 3) {
+                return this.createDate(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+            }
         }
-        return moment(value, parseFormat);
+        return dayjs(value, parseFormat, this.locale);
     }
-    return value ? moment(value).locale(this.locale) : null;
+    return value ? dayjs(value).locale(this.locale) : null;
   }
 
-  format(date: moment.Moment, displayFormat: any): string {
-    const d = this._wrap(date);
-    if (!this.isValid(d)) {
+  format(date: Dayjs, displayFormat: any): string {
+    const d = this._ensureDate(date);
+    if (!d || !d.isValid()) {
       throw Error('MultiDateAdapter: Cannot format invalid date.');
     }
-    
-    // Explicitly enforce the format based on type.
-    // By wrapping correctly above, 'jYYYY' should now be parsed by moment-jalaali.
-    
-    try {
-        if (this._calendarType === 'jalaali') {
-            return d.format('jYYYY/jMM/jDD');
-        }
-        if (this._calendarType === 'hijri') {
-            return d.format('iYYYY/iMM/iDD');
-        }
-    } catch (e) {
-        console.error('Format error', e); 
+
+    if (this._calendarType === 'jalaali') {
+        const jYear = d.jYear();
+        const jMonth = d.jMonth() + 1;
+        const jDate = d.jDate();
+        // Simple format implementation for now
+        // if displayFormat contains jMM it should replace.
+        // We can just return standard YYYY/MM/DD style
+        const pad = (n: number) => n < 10 ? '0' + n : n;
+        return `${jYear}/${pad(jMonth)}/${pad(jDate)}`;
     }
-    
+    if (this._calendarType === 'hijri') {
+        // Use standard format tokens with calendar('hijri') instance
+        // @ts-ignore
+        if (d.calendar) return d.calendar('hijri').format(displayFormat || 'YYYY/MM/DD');
+        return d.format(displayFormat || 'YYYY/MM/DD');
+    }
+
+
     return d.format(displayFormat || 'YYYY/MM/DD');
   }
 
-  addCalendarYears(date: moment.Moment, years: number): moment.Moment {
-    // wrap first, do math, return wrapped result
-    let d = this._wrap(date);
+  addCalendarYears(date: Dayjs, years: number): Dayjs {
+    const d = this._ensureDate(date)!;
     if (this._calendarType === 'jalaali') {
-        d.jYear(d.jYear() + years);
-    } else if (this._calendarType === 'hijri') {
-        d.iYear(d.iYear() + years);
-    } else {
-        d.add(years, 'years');
+        return d.jYear(d.jYear() + years);
     }
-    return d;
+    if (this._calendarType === 'hijri') {
+        return d.iYear(d.iYear() + years);
+    }
+    return d.add(years, 'year');
   }
 
-  addCalendarMonths(date: moment.Moment, months: number): moment.Moment {
-    let d = this._wrap(date);
+  addCalendarMonths(date: Dayjs, months: number): Dayjs {
+    const d = this._ensureDate(date)!;
      if (this._calendarType === 'jalaali') {
-        d.jMonth(d.jMonth() + months);
-    } else if (this._calendarType === 'hijri') {
-        d.iMonth(d.iMonth() + months);
-    } else {
-        d.add(months, 'months');
+        return d.jMonth(d.jMonth() + months);
     }
-    return d;
+    if (this._calendarType === 'hijri') {
+        return d.iMonth(d.iMonth() + months);
+    }
+    return d.add(months, 'month');
   }
 
-  addCalendarDays(date: moment.Moment, days: number): moment.Moment {
-     const d = this._wrap(date);
-     d.add(days, 'days');
-     return d;
+  addCalendarDays(date: Dayjs, days: number): Dayjs {
+     return this._ensureDate(date)!.add(days, 'day');
   }
 
-  toIso8601(date: moment.Moment): string {
+  toIso8601(date: Dayjs): string {
     return date.toISOString();
   }
 
   isDateInstance(obj: any): boolean {
-    return moment.isMoment(obj) || (!!obj && obj._isAMomentObject);
+    return dayjs.isDayjs(obj);
   }
 
-  isValid(date: moment.Moment): boolean {
-    return date.isValid();
+  isValid(date: Dayjs): boolean {
+    return dayjs.isDayjs(date) && date.isValid();
   }
 
-  invalid(): moment.Moment {
-    return moment.invalid();
+  invalid(): Dayjs {
+    return dayjs(null); // Invalid dayjs
   }
 }

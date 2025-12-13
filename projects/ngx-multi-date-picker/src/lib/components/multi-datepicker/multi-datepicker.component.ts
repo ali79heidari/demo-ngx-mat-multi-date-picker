@@ -6,10 +6,9 @@ import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { DateAdapter, MAT_DATE_FORMATS, MatDateFormats } from '@angular/material/core';
 import { MultiDateAdapter, CalendarType, StartDayOfWeek } from '../../services/multi-date-adapter';
-import * as moment from 'moment';
-import moment_jalaali from 'moment-jalaali';
-// @ts-ignore
-import moment_hijri from 'moment-hijri';
+import dayjs, { Dayjs } from 'dayjs';
+import '../../services/dayjs-extensions';
+
 
 export const MULTI_DATE_FORMATS: MatDateFormats = {
   parse: {
@@ -64,7 +63,7 @@ export interface CustomHolidayRule {
 export class MultiDatepickerComponent implements OnChanges {
   @Input() calendarType: CalendarType = 'jalaali';
   @Input() label: string = 'Choose a date';
-  @Input() value: moment.Moment | null = null;
+  @Input() value: Dayjs | null = null;
   @Input() startDay: StartDayOfWeek | null = null;
   @Input() weekendDays: number[] = [];
   @Input() customGregorianHolidays: CustomHolidayRule[] = [];
@@ -73,9 +72,9 @@ export class MultiDatepickerComponent implements OnChanges {
   @Input() showJalaaliHolidays: boolean = false;
   @Input() showHijriHolidays: boolean = false;
 
-  @Output() valueChange = new EventEmitter<moment.Moment | null>();
+  @Output() valueChange = new EventEmitter<Dayjs | null>();
 
-  constructor(private _adapter: DateAdapter<moment.Moment>) {}
+  constructor(private _adapter: DateAdapter<Dayjs>) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     const shouldRefreshHolidays = 
@@ -108,11 +107,11 @@ export class MultiDatepickerComponent implements OnChanges {
   }
 
   // Initial definition
-  dateClass: MatCalendarCellClassFunction<moment.Moment> = (cellDate, view) => {
+  dateClass: MatCalendarCellClassFunction<Dayjs> = (cellDate, view) => {
     return this._checkDate(cellDate, view);
   };
 
-  private _checkDate(cellDate: moment.Moment, view: 'month' | 'year' | 'multi-year'): string {
+  private _checkDate(cellDate: Dayjs, view: 'month' | 'year' | 'multi-year'): string {
     // Only highlight dates in month view
     if (view !== 'month') {
       return '';
@@ -127,8 +126,6 @@ export class MultiDatepickerComponent implements OnChanges {
     }
 
     // 0.1 Custom Gregorian Holidays
-    // Check if current date matches any custom rule
-    // Note: Moment month is 0-indexed, our rule assumes 1-indexed (human friendly)
     if (!isHoliday && this.customGregorianHolidays.length > 0) {
       const gYear = date.year();
       const gMonth = date.month() + 1; // 1-12
@@ -156,9 +153,9 @@ export class MultiDatepickerComponent implements OnChanges {
 
     // 2. Jalaali Holidays (Solar Hijri)
     if (this.showJalaaliHolidays && !isHoliday) {
-       const jDateObj = moment_jalaali(date);
-       const jMonth = jDateObj.jMonth(); // 0-11
-       const jDate = jDateObj.jDate();   // 1-31
+        // Use our extension methods
+       const jMonth = date.jMonth(); // 0-11
+       const jDate = date.jDate();   // 1-31
        
        // Nowruz: Farvardin 1-4 (Month 0)
        if (jMonth === 0 && jDate >= 1 && jDate <= 4) isHoliday = true;
@@ -180,9 +177,9 @@ export class MultiDatepickerComponent implements OnChanges {
 
     // 3. Hijri Holidays (Lunar Hijri)
     if (this.showHijriHolidays && !isHoliday) {
-       const hDateObj = moment_hijri(date);
-       const hMonth = hDateObj.iMonth(); // 0-11
-       const hDate = hDateObj.iDate();   // 1-30
+       // Use our extension methods
+       const hMonth = date.iMonth(); // 0-11
+       const hDate = date.iDate();   // 1-30
        
        // Tasua: Muharram 9
        if (hMonth === 0 && hDate === 9) isHoliday = true;
@@ -194,7 +191,7 @@ export class MultiDatepickerComponent implements OnChanges {
        if (hMonth === 1 && hDate === 28) isHoliday = true;
        // Martyrdom of Imam Reza: End of Safar (29 or 30)
        // Check if tomorrow is month 2 (Rabi al-Awwal)
-       const nextDay = moment_hijri(date).add(1, 'days');
+       const nextDay = date.add(1, 'day');
        if (hMonth === 1 && nextDay.iMonth() === 2) isHoliday = true;
 
        // Martyrdom of Imam Hassan Askari: Rabi al-Awwal 8
