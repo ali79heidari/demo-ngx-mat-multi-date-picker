@@ -6,11 +6,19 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatInputModule } from '@angular/material/input';
+import { MatRadioModule } from '@angular/material/radio';
 import dayjs, { Dayjs } from 'dayjs';
 import * as jalaali from 'jalaali-js';
 import 'dayjs/locale/fa';
 import 'dayjs/locale/ar';
-import {CalendarType, CustomHolidayRule, MultiDatepickerComponent, StartDayOfWeek} from 'ngx-mat-multi-date-picker';
+import {
+  CalendarType,
+  CustomHolidayRule,
+  MultiDatepickerComponent,
+  MultiDateRangePickerComponent,
+  StartDayOfWeek
+} from 'ngx-mat-multi-date-picker';
+
 
 @Component({
   selector: 'app-root',
@@ -19,11 +27,13 @@ import {CalendarType, CustomHolidayRule, MultiDatepickerComponent, StartDayOfWee
     CommonModule,
     FormsModule,
     MultiDatepickerComponent,
+    MultiDateRangePickerComponent,
     MatSelectModule,
     MatFormFieldModule,
     MatCardModule,
     MatCheckboxModule,
-    MatInputModule
+    MatInputModule,
+    MatRadioModule
   ],
   templateUrl: './app.html',
   styleUrl: './app.css'
@@ -119,6 +129,51 @@ export class App {
     }
     return '';
   }
+
+  // Showcase Examples Data
+  dateJalali: Dayjs | null = dayjs();
+  dateGregorian: Dayjs | null = dayjs();
+  dateHijri: Dayjs | null = dayjs();
+  dateCustom: Dayjs | null = dayjs().year(2025).month(0).date(15);
+  dateTouch: Dayjs | null = dayjs();
+  dateColored: Dayjs | null = dayjs();
+
+  exampleCustomHolidays: CustomHolidayRule[] = [
+    { year: 2025, month: 1, days: [1, 15, 20] }, // Jan 1st, 15th, 20th
+    { year: 2025, month: 12, days: [25] }
+  ];
+
+  // Range Picker
+  rangeStart: Dayjs | null = dayjs();
+  rangeEnd: Dayjs | null = dayjs().add(5, 'day');
+  rangeCalendarType: CalendarType = 'gregorian';
+
+  // Picker Modes
+  dateMonthPicker: Dayjs | null = dayjs();
+  dateYearPicker: Dayjs | null = dayjs();
+
+  // Advanced Features Data
+  dateMinMax: Dayjs | null = dayjs();
+  minDate: Dayjs = dayjs().subtract(7, 'day');
+  maxDate: Dayjs = dayjs().add(7, 'day');
+
+  dateFilterValue: Dayjs | null = dayjs();
+  // Filter: Only allow even dates
+  myDateFilter = (d: Dayjs | null): boolean => {
+    if (!d) return true;
+    return d.date() % 2 === 0;
+  };
+
+  dateStartView: Dayjs | null = dayjs();
+
+  dateMixedClass: Dayjs | null = dayjs();
+  // Custom Date Class: Highlight 15th of month
+  myDateClass = (d: Dayjs): string => {
+    if (d.date() === 15) {
+      return 'custom-blue-date';
+    }
+    return '';
+  };
 }
 
 

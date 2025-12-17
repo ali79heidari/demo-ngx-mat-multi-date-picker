@@ -1,83 +1,338 @@
-<div class="container">
-  <mat-card class="demo-card">
-    <mat-card-header>
-      <mat-card-title>Angular Multi-Calendar Picker</mat-card-title>
-      <mat-card-subtitle>Switch between Jalali, Gregorian, and Hijri</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
+<div class="app-container">
+  <header class="app-header">
+    <h1>Angular Material Multi-Calendar</h1>
+    <p class="subtitle">A powerful, flexible, and accessible datepicker for Angular</p>
+  </header>
 
-      <div class="controls">
-        <mat-form-field appearance="outline">
-          <mat-label>Select Calendar System</mat-label>
-          <mat-select [(ngModel)]="calendarType" name="calendarType">
-            @for (t of types; track t) {
-              <mat-option [value]="t.value">
-                {{ t.label }}
-              </mat-option>
+  <main>
+    <!-- Playground Section -->
+    <section class="section-playground">
+      <div class="section-header">
+        <h2>Interactive Playground</h2>
+        <p>Configure the datepicker live to see how it adapts.</p>
+      </div>
+      
+      <mat-card class="playground-card">
+        <mat-card-content class="playground-content">
+          <div class="config-panel">
+            <h3>Configuration</h3>
+            <div class="config-grid">
+              <mat-form-field appearance="outline">
+                <mat-label>Calendar System</mat-label>
+                <mat-select [(ngModel)]="calendarType" name="calendarType">
+                  @for (t of types; track t) {
+                    <mat-option [value]="t.value">{{ t.label }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Start Day</mat-label>
+                <mat-select [(ngModel)]="startDay" name="startDay">
+                  @for (d of startDays; track d) {
+                    <mat-option [value]="d.value">{{ d.label }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Weekend Days</mat-label>
+                <mat-select [(ngModel)]="weekendDays" name="weekendDays" multiple>
+                  @for (d of daysOfWeek; track d) {
+                    <mat-option [value]="d.value">{{ d.label }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Custom Gregorian Holidays</mat-label>
+                <input matInput [(ngModel)]="customHolidaysInput" placeholder="2025-01: 1,2">
+                <mat-hint>Format: YYYY-MM: D,D...</mat-hint>
+              </mat-form-field>
+            </div>
+
+            <div class="toggles">
+              <h4>Official Holidays</h4>
+              <div class="checkbox-group">
+                <mat-checkbox [(ngModel)]="showGregorianHolidays">Gregorian</mat-checkbox>
+                <mat-checkbox [(ngModel)]="showJalaliHolidays">Jalali</mat-checkbox>
+                <mat-checkbox [(ngModel)]="showHijriHolidays">Hijri</mat-checkbox>
+              </div>
+            </div>
+          </div>
+
+          <div class="preview-panel">
+            <div class="picker-wrapper">
+              <ngx-multi-datepicker
+                [label]="'Select Date (' + calendarType + ')'"
+                [calendarType]="calendarType"
+                [(value)]="dateValue"
+                [startDay]="startDay"
+                [weekendDays]="weekendDays"
+                [customGregorianHolidays]="parsedCustomHolidays"
+                [showGregorianHolidays]="showGregorianHolidays"
+                [showJalaliHolidays]="showJalaliHolidays"
+                [showHijriHolidays]="showHijriHolidays"
+                appearance="outline">
+              </ngx-multi-datepicker>
+            </div>
+            
+            @if (dateValue) {
+              <div class="selected-value">
+                <div class="value-item">
+                  <span class="label">Gregorian</span>
+                  <span class="value">{{ gregorianDate }}</span>
+                </div>
+                <div class="value-item">
+                  <span class="label">Jalali</span>
+                  <span class="value">{{ jalaliDate }}</span>
+                </div>
+                <div class="value-item">
+                  <span class="label">Hijri</span>
+                  <span class="value">{{ hijriDate }}</span>
+                </div>
+              </div>
             }
-          </mat-select>
-        </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </section>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Start Day of Week</mat-label>
-          <mat-select [(ngModel)]="startDay" name="startDay">
-            @for (d of startDays; track d) {
-              <mat-option [value]="d.value">
-                {{ d.label }}
-              </mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Weekend Holidays</mat-label>
-          <mat-select [(ngModel)]="weekendDays" name="weekendDays" multiple>
-            @for (d of daysOfWeek; track d) {
-              <mat-option [value]="d.value">
-                {{ d.label }}
-              </mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Custom Gregorian Holidays (Format: YYYY-MM: D,D; ...)</mat-label>
-          <input matInput [(ngModel)]="customHolidaysInput" name="customHolidaysInput">
-          <mat-hint>Example: 2025-01: 1,3,4; 2025-12: 25</mat-hint>
-        </mat-form-field>
-
-        <section class="holiday-toggles">
-          <h4>Highlight Official Holidays:</h4>
-          <p><mat-checkbox [(ngModel)]="showGregorianHolidays">Gregorian</mat-checkbox></p>
-          <p><mat-checkbox [(ngModel)]="showJalaliHolidays">Jalali (Solar)</mat-checkbox></p>
-          <p><mat-checkbox [(ngModel)]="showHijriHolidays">Hijri (Lunar)</mat-checkbox></p>
-        </section>
+    <!-- Showcase Section -->
+    <section class="section-showcase">
+      <div class="section-header">
+        <h2>Feature Showcase</h2>
+        <p>Explore different configurations and use-cases.</p>
       </div>
 
-      <div class="picker-container">
-        <ngx-multi-datepicker
-          [label]="'Select Date (' + calendarType + ')'"
-          [calendarType]="calendarType"
-          [(value)]="dateValue"
-          [startDay]="startDay"
-          [weekendDays]="weekendDays"
-          [customGregorianHolidays]="parsedCustomHolidays"
-          [showGregorianHolidays]="showGregorianHolidays"
-          [showJalaliHolidays]="showJalaliHolidays"
-          [showHijriHolidays]="showHijriHolidays">
-        </ngx-multi-datepicker>
+      <div class="showcase-grid">
+        <!-- Card 1: Jalali Default -->
+        <mat-card class="showcase-card">
+          <mat-card-header>
+            <mat-card-title>Jalali Calendar</mat-card-title>
+            <mat-card-subtitle>Persian Solar Hijri</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Standard setup for Iran. Starts on Saturday, shows Jalali holidays.</p>
+            <ngx-multi-datepicker
+              label="Date of Birth"
+              calendarType="jalali"
+              [(value)]="dateJalali"
+              startDay="saturday"
+              [showJalaliHolidays]="true">
+            </ngx-multi-datepicker>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Card 2: Hijri -->
+        <mat-card class="showcase-card">
+          <mat-card-header>
+            <mat-card-title>Hijri Calendar</mat-card-title>
+            <mat-card-subtitle>Islamic Lunar Calendar</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Used in Islamic countries. Hijri holidays enabled.</p>
+            <ngx-multi-datepicker
+              label="Ramadan Start"
+              calendarType="hijri"
+              [(value)]="dateHijri"
+              [showHijriHolidays]="true">
+            </ngx-multi-datepicker>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Card 3: Gregorian with Monday Start -->
+        <mat-card class="showcase-card">
+          <mat-card-header>
+            <mat-card-title>Gregorian (EU)</mat-card-title>
+            <mat-card-subtitle>Monday Start of Week</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Typical European configuration with Monday as the start day.</p>
+            <ngx-multi-datepicker
+              label="Meeting Date"
+              calendarType="gregorian"
+              [(value)]="dateGregorian"
+              startDay="monday"
+              [weekendDays]="[6, 0]">
+            </ngx-multi-datepicker>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Card 4: Custom Holidays -->
+        <mat-card class="showcase-card">
+          <mat-card-header>
+            <mat-card-title>Custom Holidays</mat-card-title>
+            <mat-card-subtitle>Specific Business Rules</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Highlight specific dates (e.g., Jan 1, 15, 20 in 2025).</p>
+            <ngx-multi-datepicker
+              label="Select Slot"
+              calendarType="gregorian"
+              [(value)]="dateCustom"
+              [customGregorianHolidays]="exampleCustomHolidays">
+            </ngx-multi-datepicker>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Card 5: Date Range Picker -->
+        <mat-card class="showcase-card">
+          <mat-card-header>
+            <mat-card-title>Date Range Picker</mat-card-title>
+            <mat-card-subtitle>Select Start & End</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Pick a date range with validation.</p>
+            <div class="calendar-type-select">
+                <mat-radio-group [(ngModel)]="rangeCalendarType" aria-label="Select an option">
+                    <mat-radio-button value="gregorian">Gregorian</mat-radio-button>
+                    <mat-radio-button value="jalali">Jalali</mat-radio-button>
+                    <mat-radio-button value="hijri">Hijri</mat-radio-button>
+                </mat-radio-group>
+            </div>
+            <ngx-multi-date-range-picker
+              label="Travel Dates"
+              [calendarType]="rangeCalendarType"
+              [(start)]="rangeStart"
+              [(end)]="rangeEnd"
+              [showGregorianHolidays]="true">
+            </ngx-multi-date-range-picker>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Card 6: Month Picker -->
+        <mat-card class="showcase-card">
+          <mat-card-header>
+            <mat-card-title>Month Picker</mat-card-title>
+            <mat-card-subtitle>Select Month Only</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Select a month and year (e.g. for Credit Card expiry).</p>
+            <ngx-multi-datepicker
+              label="Expiry Date"
+              calendarType="gregorian"
+              pickerMode="month-year"
+              [(value)]="dateMonthPicker">
+            </ngx-multi-datepicker>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Card 7: Year Picker -->
+        <mat-card class="showcase-card">
+          <mat-card-header>
+            <mat-card-title>Year Picker</mat-card-title>
+            <mat-card-subtitle>Select Year Only</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Select a specific year.</p>
+            <ngx-multi-datepicker
+              label="Year of Birth"
+              calendarType="jalali"
+              pickerMode="year"
+              [(value)]="dateYearPicker">
+            </ngx-multi-datepicker>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Card 5: Touch UI -->
+        <mat-card class="showcase-card">
+          <mat-card-header>
+            <mat-card-title>Touch UI</mat-card-title>
+            <mat-card-subtitle>Mobile Optimized</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Opens a large dialog suitable for mobile devices.</p>
+            <ngx-multi-datepicker
+              label="Tap to Open"
+              calendarType="jalali"
+              [(value)]="dateTouch"
+              [touchUi]="true">
+            </ngx-multi-datepicker>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Card 6: Themed -->
+        <mat-card class="showcase-card">
+          <mat-card-header>
+            <mat-card-title>Theming</mat-card-title>
+            <mat-card-subtitle>Material Colors</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Supports primary, accent, and warn palettes.</p>
+            <div class="color-pickers">
+              <ngx-multi-datepicker label="Accent" color="accent" [(value)]="dateColored"></ngx-multi-datepicker>
+              <ngx-multi-datepicker label="Warn" color="warn" [(value)]="dateColored"></ngx-multi-datepicker>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Card 7: Min & Max Constraints -->
+        <mat-card class="showcase-card">
+          <mat-card-header>
+            <mat-card-title>Min & Max Limits</mat-card-title>
+            <mat-card-subtitle>Restrict Selection</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Selection restricted to +/- 7 days from today.</p>
+            <ngx-multi-datepicker
+              label="Limited Range"
+              [(value)]="dateMinMax"
+              [min]="minDate"
+              [max]="maxDate">
+            </ngx-multi-datepicker>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Card 8: Date Filter -->
+        <mat-card class="showcase-card">
+          <mat-card-header>
+            <mat-card-title>Date Filter</mat-card-title>
+            <mat-card-subtitle>Custom Logic</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Advanced validation. Example: Only even dates allowed.</p>
+            <ngx-multi-datepicker
+              label="Even Dates Only"
+              [(value)]="dateFilterValue"
+              [dateFilter]="myDateFilter">
+            </ngx-multi-datepicker>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Card 9: Start View -->
+        <mat-card class="showcase-card">
+          <mat-card-header>
+            <mat-card-title>Start View</mat-card-title>
+            <mat-card-subtitle>Initial View Mode</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Opens directly in 'year' view to select year first.</p>
+            <ngx-multi-datepicker
+              label="Year View First"
+              [(value)]="dateStartView"
+              startView="year">
+            </ngx-multi-datepicker>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Card 10: Mixed Custom Styling -->
+        <mat-card class="showcase-card">
+          <mat-card-header>
+            <mat-card-title>Merged Styles</mat-card-title>
+            <mat-card-subtitle>Holidays + Custom Classes</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <p>Combines internal holiday red with user's blue class (15th).</p>
+            <ngx-multi-datepicker
+              label="Custom + Holidays"
+              [(value)]="dateMixedClass"
+              [showGregorianHolidays]="true"
+              [dateClass]="myDateClass">
+            </ngx-multi-datepicker>
+          </mat-card-content>
+        </mat-card>
       </div>
-
-      @if (dateValue) {
-        <div class="result-display">
-          <h3>Selected Date Formats:</h3>
-          <p><strong>Gregorian:</strong> {{ gregorianDate }}</p>
-          <p><strong>Jalali:</strong> {{ jalaliDate }}</p>
-          <p><strong>Hijri:</strong> {{ hijriDate }}</p>
-          <p><strong>ISO:</strong> {{ dateValue.toISOString() }}</p>
-        </div>
-      }
-
-    </mat-card-content>
-  </mat-card>
+    </section>
+  </main>
 </div>

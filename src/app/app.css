@@ -1,66 +1,189 @@
 :host {
   display: block;
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  background-color: #f8fafc;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-family: "Roboto", sans-serif;
+  color: #1e293b;
+  padding-bottom: 4rem;
 }
 
-.container {
-  padding: 20px;
-  width: 100%;
-  max-width: 500px;
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
 }
 
-.demo-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 16px;
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-  padding: 20px;
+.app-header {
+  text-align: center;
+  padding: 3rem 0;
 }
 
-mat-card-header {
-  margin-bottom: 20px;
+.app-header h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin: 0;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.02em;
 }
 
-mat-card-title {
+.subtitle {
+  color: #64748b;
+  font-size: 1.125rem;
+  margin-top: 0.75rem;
+}
+
+/* Custom Date Class for Demo */
+.custom-blue-date .mat-calendar-body-cell-content {
+  background-color: #e0f2fe !important;
+  color: #0284c7 !important;
+  font-weight: bold;
+  border-radius: 50%;
+}
+
+.section-header {
+  margin-bottom: 1.5rem;
+}
+
+.section-header h2 {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #333;
+  color: #334155;
+  margin: 0;
 }
 
-.controls {
-  margin-bottom: 20px;
+.section-header p {
+  color: #64748b;
+  margin: 0.5rem 0 0;
 }
 
-.picker-container {
-  margin-bottom: 30px;
+/* Playground Styles */
+.section-playground {
+  margin-bottom: 4rem;
 }
 
-.result-display {
-  background: #f5f7fa;
-  padding: 15px;
-  border-radius: 8px;
-  border-left: 4px solid #764ba2;
+.playground-card {
+  border-radius: 16px !important;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
+  overflow: hidden;
+  background: white;
 }
 
-.result-display h3 {
+.playground-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  padding: 2rem !important;
+}
+
+@media (max-width: 768px) {
+  .playground-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+.config-panel h3 {
   margin-top: 0;
-  color: #555;
-  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+  color: #475569;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 0.5rem;
 }
 
-.result-display p {
-  margin: 5px 0;
-  color: #333;
+.config-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.checkbox-group {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.preview-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #f1f5f9;
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+.picker-wrapper {
+  margin-bottom: 2rem;
+  transform: scale(1.1);
+}
+
+.selected-value {
+  width: 100%;
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+}
+
+.value-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.value-item:last-child {
+  border-bottom: none;
+}
+
+.value-item .label {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.value-item .value {
+  color: #0f172a;
   font-family: monospace;
-  font-size: 0.95rem;
+  font-weight: 600;
 }
 
-/* Ensure material styles work without prebuilt theme included in angular.json? 
-   We usually need to include a theme. 
-   I will add one to styles.css globally.
-*/
+/* Showcase Styles */
+.showcase-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.showcase-card {
+  border-radius: 12px !important;
+  transition: transform 0.2s, box-shadow 0.2s;
+  height: 100%;
+}
+
+.showcase-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1) !important;
+}
+
+.showcase-card mat-card-header {
+  margin-bottom: 1rem;
+}
+
+.showcase-card mat-card-content p {
+  color: #64748b;
+  margin-bottom: 1.5rem;
+  min-height: 48px; /* Alignment visual fix */
+}
+
+.color-pickers {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
